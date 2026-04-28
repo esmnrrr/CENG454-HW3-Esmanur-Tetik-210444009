@@ -8,13 +8,18 @@ public class CoreController : MonoBehaviour, IDamageable
     private void Start()
     {
         currentHealth = maxHealth;
+        // baskar baslamaz cani ui a bildiriyoruz
+        GameEventManager.CoreHealthChanged(currentHealth);
     }
 
     // Hasar alma metodu
     public void TakeDamage(int amount)
     {
         currentHealth -= amount;
-        Debug.Log("Çekirdek hasar aldý! Kalan Can: " + currentHealth);
+        //Debug.Log("Çekirdek hasar aldý! Kalan Can: " + currentHealth);
+
+        // ortaliga haber saliyoruz, can degisti ilgilenenler duysun diye
+        GameEventManager.CoreHealthChanged(currentHealth);
 
         if (currentHealth <= 0)
         {
@@ -24,8 +29,11 @@ public class CoreController : MonoBehaviour, IDamageable
 
     private void Die()
     {
-        Debug.Log("GAME OVER! Çekirdek Yok Oldu!");
-        FindAnyObjectByType<GameManager>().GameOver();
+        //Debug.Log("GAME OVER! Çekirdek Yok Oldu!");
+        //FindAnyObjectByType<GameManager>().GameOver();
+
+        // ortaliga haber saliyoruz, ben yok oldum ilgilenenler duysun diye
+        GameEventManager.CoreDestroyed();
         gameObject.SetActive(false);
     }
 }
