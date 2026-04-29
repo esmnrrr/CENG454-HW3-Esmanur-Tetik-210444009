@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     [Header("Savaþ Ayarlarý")]
     public int damage = 20;
 
+    private IWeapon myWeapon;
+
     private CharacterController controller;
     private float verticalRotation = 0f;
     private Vector3 velocity;
@@ -27,17 +29,28 @@ public class PlayerController : MonoBehaviour
         // Oyun baþladýðýnda fare imlecini gizle ve ekranýn ortasýna kilitle
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        // Oyuna girerken karakterin eline Temel Silahý veriyoruz!
+        myWeapon = new BasicWeapon();
     }
 
     void Update()
     {
-        HandleMouseLook();
-        HandleMovement();
+        HandleMouseLook(); 
+        HandleMovement();  
 
         // Sol týk ile ateþ etme
         if (Input.GetMouseButtonDown(0))
         {
-            Shoot();
+            myWeapon.Fire(playerCamera); // Silah karar versin nasýl ateþ edeceðine!
+        }
+
+        // DEKORATÖR TESTÝ: "E" tuþuna basýnca silaha güçlendirme tak!
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            // Temel silahý al, DoubleShot kýlýfýnýn (Decorator) içine koy!
+            myWeapon = new DoubleShotDecorator(myWeapon);
+            Debug.Log("SÝLAH GÜÇLENDÝRÝLDÝ (UPGRADE ALINDI)!");
         }
     }
 
@@ -70,22 +83,5 @@ public class PlayerController : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-    }
-
-    void Shoot()
-    {
-        // FPS oyunlarýnda ýþýn (mermi) kameranýn tam ortasýndan ileri doðru çýkar
-        Ray ray = new Ray(playerCamera.position, playerCamera.forward);
-
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            IDamageable target = hit.collider.GetComponent<IDamageable>();
-
-            if (target != null)
-            {
-                target.TakeDamage(damage);
-                Debug.Log(hit.collider.name + " objesini vurdun!");
-            }
-        }
     }
 }
