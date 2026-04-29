@@ -1,20 +1,34 @@
 using UnityEngine;
+using UnityEngine.Pool; // Havuz kütüphanesi!
 
 // Düþman da mermilerimizden hasar alacaðý için IDamageable kullanýyor!
 public class BasicEnemy : MonoBehaviour, IDamageable
 {
     public Transform targetCore;
     public float speed = 2f;
-    public int health = 40;
 
-    // STRATEJÝ DESENÝ! Düþmana dýþarýdan strateji baðlýyoruz.
+    public int maxHealth = 40; 
+    private int currentHealth;
+
     public AttackStrategySO attackStrategy;
-
     private float lastAttackTime;
+
+    // Düþmanýn ait olduðu havuzun referansý
+    private IObjectPool<BasicEnemy> pool;
+
+    public void SetPool(IObjectPool<BasicEnemy> pool)
+    {
+        this.pool = pool;
+    }
+
+    // HOCANIN ZORUNLU KURALI: Havuzdan her çýktýðýnda canýný SIFIRLA!
+    private void OnEnable()
+    {
+        currentHealth = maxHealth;
+    }
 
     void Start()
     {
-        // Eðer targetCore boþsa, sahnede "Core" etiketli objeyi otomatik bulsun
         if (targetCore == null)
         {
             GameObject core = GameObject.FindGameObjectWithTag("Core");
@@ -43,13 +57,25 @@ public class BasicEnemy : MonoBehaviour, IDamageable
 
     public void TakeDamage(int amount)
     {
-        health -= amount;
-        if (health <= 0)
+        currentHealth -= amount;
+        if (currentHealth <= 0)
         {
-            Debug.Log("Düþman öldürüldü!");
-            Destroy(gameObject);
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log("Düþman düþtü, havuza geri gönderiliyor!");
+
+        // Obje silinmiyor, havuza iade ediliyor (Release)
+        if (pool != null)
+        {
+            pool.Release(this);
+        }
+        else
+        {
+            gameObject.SetActive(false); // Havuz yoksa sadece gizle
         }
     }
 }
-
-    

@@ -14,7 +14,10 @@ public class KamikazeAttackSO : AttackStrategySO
             Debug.Log(attacker.name + " KAMÝKAZE Yaptý! " + damage + " hasar verdi ve patladý!");
 
             // Kendini imha et
-            Destroy(attacker.gameObject);
+            //Destroy(attacker.gameObject);
+
+            // "Destroy" yerine düþmanýn kendine devasa bir hasar verdiriyoruz ki normal yollarla ölüp havuza dönsün!
+            attacker.GetComponent<IDamageable>()?.TakeDamage(9999);
         }
     }
 }
