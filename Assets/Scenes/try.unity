@@ -1248,6 +1248,7 @@ MonoBehaviour:
   targetCore: {fileID: 1313926321}
   speed: 2
   health: 40
+  attackStrategy: {fileID: 11400000, guid: 76753f08bc35e414aa29bbe4d72bfac3, type: 2}
 --- !u!65 &2109159550
 BoxCollider:
   m_ObjectHideFlags: 0
