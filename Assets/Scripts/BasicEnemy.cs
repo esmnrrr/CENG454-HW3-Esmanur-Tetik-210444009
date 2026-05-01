@@ -4,6 +4,8 @@ using UnityEngine.Pool; // Havuz kütüphanesi!
 // Düþman da mermilerimizden hasar alacaðý için IDamageable kullanýyor!
 public class BasicEnemy : MonoBehaviour, IDamageable
 {
+    public Animator animator;
+
     public Transform targetCore;
     public float speed = 2f;
 
@@ -29,29 +31,47 @@ public class BasicEnemy : MonoBehaviour, IDamageable
 
     void Start()
     {
+        // 1. ZOMBÝ DOÐAR DOÐMAZ KENDÝ ANÝMATOR'ÜNÜ KENDÝ BULSUN! (Artýk sürükle-býraka gerek yok)
+        animator = GetComponent<Animator>();
+
+        // 2. ÇEKÝRDEÐÝ BULMA KODU (Bu zaten vardý)
         if (targetCore == null)
         {
             GameObject core = GameObject.FindGameObjectWithTag("Core");
             if (core != null) targetCore = core.transform;
         }
     }
-
+    
     void Update()
     {
         if (targetCore == null || attackStrategy == null) return;
 
         float distance = Vector3.Distance(transform.position, targetCore.position);
 
-        // Menzilde deðilse hedefe yürü
         if (distance > attackStrategy.attackRange)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetCore.position, speed * Time.deltaTime);
+            // 1. UÇMAYI ENGELLE: Hedefin sadece yatay konumunu al, yüksekliði zombiyle ayný kalsýn!
+            Vector3 flatTargetPos = new Vector3(targetCore.position.x, transform.position.y, targetCore.position.z);
+
+            // 2. YAN KAYMAYI ENGELLE: Zombinin yüzünü hedefe döndür!
+            transform.LookAt(flatTargetPos);
+
+            // 3. ÝLERLE: Þimdi dümdüz o noktaya yürü
+            transform.position = Vector3.MoveTowards(transform.position, flatTargetPos, speed * Time.deltaTime);
+
+            // YÜRÜYORSA ANÝMASYONU BAÞLAT
+            if (animator != null) animator.SetBool("isWalking", true);
         }
-        // Menzildeyse ve bekleme süresi dolduysa STRATEJÝYÝ UYGULA!
-        else if (Time.time >= lastAttackTime + attackStrategy.attackCooldown)
+        else
         {
-            attackStrategy.Attack(transform, targetCore);
-            lastAttackTime = Time.time;
+            // MENZÝLE GÝRDÝYSE YÜRÜMEYÝ DURDUR
+            if (animator != null) animator.SetBool("isWalking", false);
+
+            if (Time.time >= lastAttackTime + attackStrategy.attackCooldown)
+            {
+                attackStrategy.Attack(transform, targetCore);
+                lastAttackTime = Time.time;
+            }
         }
     }
 
