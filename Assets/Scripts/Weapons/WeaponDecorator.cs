@@ -5,7 +5,7 @@ public abstract class WeaponDecorator : IWeapon
 {
     protected IWeapon decoratedWeapon;
 
-    // Kýlýfýn içine hangi silahý koyacaðýmýzý constructor (yapýcý) ile belirliyoruz
+    // Kýlýfýn içine hangi silahý koyacaðýmýzý constructor ile belirliyoruz
     public WeaponDecorator(IWeapon weapon)
     {
         this.decoratedWeapon = weapon;

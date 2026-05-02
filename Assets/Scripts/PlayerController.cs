@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Bu kod otomatik olarak karakterine bir CharacterController ekleyecek
+// Bu kod otomatik olarak bir CharacterController ekliyor
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {

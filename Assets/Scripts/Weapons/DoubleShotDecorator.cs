@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class DoubleShotDecorator : WeaponDecorator
 {
-    // Üst sýnýfýn kýlýf mantýðýný aynen alýyoruz
+    // Üst sýnýfý aliyoruz ve sadece ekstra bir mermi atma iþlevi ekliyoruz
     public DoubleShotDecorator(IWeapon weapon) : base(weapon) { }
 
     public override void Fire(Transform cameraTransform)
     {
-        // 1. Önce içindeki orijinal silah ateþ etsin (Normal mermi)
+        // 1. Önce içindeki orijinal silah ateþ etsin
         base.Fire(cameraTransform);
 
         Debug.Log("+++ DOUBLE SHOT AKTÝF: Ekstra Mermi Gitti! +++");
 
-        // 2. Sonra biz ekstra bir mermi daha atalým (Hafif çapraz gitsin ki çift mermi olduðu anlaþýlsýn)
+        // 2. Sonra ekstra bir mermi daha atiyoruz, biraz saða kayarak
         Vector3 spreadDirection = cameraTransform.forward + (cameraTransform.right * 0.05f);
         Ray extraRay = new Ray(cameraTransform.position, spreadDirection);
 
